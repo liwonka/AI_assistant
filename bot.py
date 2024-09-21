@@ -3,22 +3,26 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 from docx import Document
 
 # Команда /start
+# Команда /start
 def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Привет! Я ИИ-ассистент сделанный командой Миньоны для хакатона')
+    update.message.reply_text('Здравствуйте! Отправьте мне файл своей НИР или ВКР, и я исправлю его в соответствии с ГОСТ.')
 
 # Обработка документов
 def handle_document(update: Update, context: CallbackContext) -> None:
     file = update.message.document.get_file()
     file.download('received_file.docx')
 
+    # Создаем пустой документ
+    doc = Document()
+    doc.save('отчет.docx')
+
     # Отправляем пустой документ обратно пользователю
-    with open('empty_file.docx', 'rb') as f:
-        update.message.reply_document(document=InputFile(f, filename='empty_file.docx'))
+    with open('отчет.docx', 'rb') as f:
+        update.message.reply_text("Готово! Все замечания и правки по работе я отразил в отчете")
+        update.message.reply_document(document=InputFile(f, filename='отчет.docx'))
 
 def echo(update: Update, context: CallbackContext) -> None:
-    first_name = str(update.message.from_user.first_name)
-    last_name = str(update.message.from_user.last_name)
-    update.message.reply_text("Отвечаю обратно пользователю " + first_name + " " + last_name)
+    update.message.reply_text('Это не .doc/.docx файл!')
 
 # Основная функция
 def main() -> None:
@@ -33,7 +37,8 @@ def main() -> None:
     dispatcher.add_handler(MessageHandler(
         Filters.document.mime_type("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
         handle_document))
-    #dispatcher.add_handler(MessageHandler(Filters.document.mime_type("application/msword"), handle_document))
+    dispatcher.add_handler(MessageHandler(Filters.document.mime_type("application/msword"), handle_document))
+
     dispatcher.add_handler(MessageHandler(Filters.text, echo))
     # Запускаем бота
     updater.start_polling()
