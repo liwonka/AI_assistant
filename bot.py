@@ -1,5 +1,5 @@
 from telegram import Update, InputFile
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
 from docx import Document
 
 # Команда /start
@@ -35,11 +35,11 @@ def main() -> None:
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(
-        Filters.document.mime_type("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        filters.document.mime_type("/shared/AI_assistant/noutbuk/output_requirements_table.docx"),
         handle_document))
-    dispatcher.add_handler(MessageHandler(Filters.document.mime_type("application/msword"), handle_document))
+    dispatcher.add_handler(MessageHandler(filters.document.mime_type("application/msword"), handle_document))
 
-    dispatcher.add_handler(MessageHandler(Filters.text, echo))
+    dispatcher.add_handler(MessageHandler(filters.text, echo))
     # Запускаем бота
     updater.start_polling()
 
